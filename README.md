@@ -70,13 +70,14 @@ It is built around concepts and tooling from:
 ├── 07_cli_workflow/               # Shell + Python QA for production CSVs
 ├── 08_mcp_pyrestoolbox/           # Using pyResToolbox through MCP
 ├── 09_parallel_fanout/            # Parallel sensitivity studies
+├── assets/                        # Generated plots and reference result tables
+├── scripts/generate_course_figures.py
 ├── .claude/
 │   ├── agents/reservoir-reviewer.md
 │   └── skills/
 │       ├── reservoir-engineering/SKILL.md
 │       └── run-tests/SKILL.md
 ├── references/pyrestoolbox-workflows.md
-├── video-claude-reservoir-engineering/
 ├── CLAUDE.md
 ├── requirements.txt
 └── README.md
@@ -106,6 +107,14 @@ python3 -m pip install -r requirements.txt
 ```
 
 If your system uses `python` instead of `python3`, adjust the commands accordingly.
+
+Generate the course plots and result tables:
+
+```bash
+python3 scripts/generate_course_figures.py
+```
+
+The generated outputs live in `assets/` and are committed so the course is readable on GitHub without running code first. Re-run the script whenever the sample data or screening assumptions change.
 
 ## Quick Start
 
@@ -151,6 +160,33 @@ The "before" prompts are intentionally under-specified. They mimic how engineers
 | 8 | `08_mcp_pyrestoolbox/` | Use MCP tools for live calculations | pyResToolbox PVT and simulation workflows |
 | 9 | `09_parallel_fanout/` | Parallelize independent cases | Sensitivity studies across methods and assumptions |
 
+## Illustrated Outputs
+
+This course now includes generated figures that make the engineering checks visible. The purpose is not decoration. The plots show what Claude should be asked to produce or verify before an engineer trusts the result.
+
+![Production water-cut diagnostic](assets/production_water_cut.png)
+
+The sample production data shows two simple but useful signals:
+
+- `A-01` has stronger oil volume but water cut still increases from 7.7% to 14.6%.
+- `B-02` starts wetter and also trends upward, from 21.6% to 27.7%.
+- A useful Claude prompt should ask for both the calculation and the interpretation: "is water cut increasing, by how many percentage points, and does the trend respect well/date ordering?"
+
+![PVT API to specific gravity curve](assets/pvt_api_specific_gravity.png)
+
+PVT unit bugs are easier to catch when the expected relationship is visible. Higher API gravity means lighter oil, so specific gravity should decrease as API increases. A fix that passes a round-trip test but violates this monotonic relationship is still suspicious.
+
+![DCA decline sensitivity](assets/dca_decline_sensitivity.png)
+
+The DCA plot makes two checks concrete:
+
+- Higher nominal decline should produce lower future rates for the same initial rate.
+- Lower economic limits should increase EUR, but the result is still a screening calculation, not a reserves booking.
+
+![Claude reservoir workflow](assets/claude_reservoir_workflow.png)
+
+The generated tables behind these figures are in `assets/generated_results.md`.
+
 ## Exercise 1: Explore, Plan, Then Code
 
 Claude is most useful when it first understands the codebase. In this exercise, Claude reads a production analysis script, a sample production CSV, and existing tests before adding water-cut trend analysis.
@@ -160,12 +196,14 @@ Engineering lesson:
 - Water cut must be computed from oil and water volumes.
 - The trend must respect well/date ordering.
 - A production metric should be tested against known values.
+- A plot should reveal whether a calculation is plausible before anyone reads the code line by line.
 
 Claude lesson:
 
 - Plan mode reduces unnecessary edits.
 - File-specific prompts produce better implementations.
 - Tests define what "done" means.
+- Generated figures create a second verification surface: if the table says water cut rises but the plot falls, investigate.
 
 ## Exercise 2: Specific Context
 
@@ -178,10 +216,17 @@ SG = 141.5 / (API + 131.5)
 API = 141.5 / SG - 131.5
 ```
 
+Interpretation guardrail:
+
+- API and specific gravity move in opposite directions.
+- A 35 API oil has SG near 0.850.
+- The conversion is dimensionless; pressure conversion bugs should not be mixed into this function.
+
 Claude lesson:
 
 - "Fix the PVT bug" makes Claude search and guess.
 - Naming the failing test and expected formula lets Claude go directly to the fault.
+- Asking for monotonic checks catches a broader class of mistakes than one round-trip example.
 
 ## Exercise 3: Verify Your Work
 
@@ -193,6 +238,7 @@ Good tests include:
 - nonnegative rates
 - rejected invalid inputs
 - EUR increasing as the economic limit decreases
+- sensitivity plots that make method and assumption choices obvious
 
 Claude lesson:
 
@@ -405,25 +451,22 @@ This repository includes Claude configuration examples:
 
 These are meant to be studied and adapted. The most important pattern is not the exact wording. The important pattern is that reservoir engineering constraints are made explicit and reusable.
 
-## Project Video
+## Generated Figures
 
-A short Hyperframes video introducing the project is included in:
+The course figures are built from `scripts/generate_course_figures.py`. This script intentionally uses small, transparent calculations:
 
-```text
-video-claude-reservoir-engineering/
+- water cut and GOR from `01_explore_plan_code/sample_production.csv`
+- API-to-specific-gravity reference points from the standard petroleum engineering relationship
+- exponential decline screening cases with explicit `qi`, `di`, and economic-limit assumptions
+- a workflow diagram showing the intended Claude Code quality loop
+
+To refresh the figures:
+
+```bash
+python3 scripts/generate_course_figures.py
 ```
 
-Rendered MP4:
-
-```text
-video-claude-reservoir-engineering/renders/claude-for-reservoir-engineering.mp4
-```
-
-Editable Hyperframes source:
-
-```text
-video-claude-reservoir-engineering/index.html
-```
+Then review `assets/generated_results.md` and the PNGs before committing. If a figure changes, the narrative should change with it.
 
 ## Suggested Teaching Format
 
@@ -504,5 +547,3 @@ Thanks to the maintainers and contributors of:
 - pyResToolbox
 - pyrestoolbox-mcp
 - claude-code-for-hydrology
-- Hyperframes, used to create the included project video
-
