@@ -27,6 +27,17 @@ Ported from [Claude-for-reservoir-engineering](https://github.com/gabrielserrao/
 | `AGENTS.md` | Reviewer subagent prompt |
 | `CLAUDE.md` | Project rules loaded by `/init` |
 
+## Sample Graphs
+
+Run `python scripts/generate_course_figures.py` to regenerate.
+
+| Graph | File | Description |
+|-------|------|-------------|
+| Monthly Production & Water-Cut | ![production_water_cut.png](assets/production_water_cut.png) | Oil/water volumes and water-cut % trend by well |
+| PVT API-to-Specific-Gravity | ![pvt_api_specific_gravity.png](assets/pvt_api_specific_gravity.png) | API gravity vs oil-specific gravity curve with sample points |
+| DCA Decline & EUR Sensitivity | ![dca_decline_sensitivity.png](assets/dca_decline_sensitivity.png) | Exponential decline curves and EUR sensitivity to economic limit |
+| Engineering Workflow Map | ![hermes_reservoir_workflow.png](assets/hermes_reservoir_workflow.png) | 5-step guardrail workflow (explore-plan-code-verify-review) |
+
 ## Loaded Context
 
 `CLAUDE.md` and `AGENTS.md` sit at repo root. Hermes reads `CLAUDE.md` when you run `hermes --worktree` or explicitly `/init`.

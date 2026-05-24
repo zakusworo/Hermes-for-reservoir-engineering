@@ -224,7 +224,7 @@ def plot_ai_workflow_map() -> None:
         color="#111111",
     )
     fig.tight_layout()
-    fig.savefig(ASSETS / "claude_reservoir_workflow.png", dpi=180)
+    fig.savefig(ASSETS / "hermes_reservoir_workflow.png", dpi=180)
     plt.close(fig)
 
 
