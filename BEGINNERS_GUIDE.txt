@@ -1,0 +1,96 @@
+# Beginner's Guide: Hermes for Reservoir Engineering
+
+This repo teaches how to use the Hermes AI agent to help with reservoir engineering work. Suitable for engineers who are just starting to use AI in the terminal.
+
+## What You Need
+
+1. **Hermes Agent** — install from https://hermes-agent.nousresearch.com/docs/
+2. **Python** — usually already available on Linux/WSL
+3. **Working folder** — clone or copy this repo to a location of your choice (e.g., `~/hermes-reservoir-engineering` or `E:\hermes-reservoir-engineering`)
+
+## Quick Start (5 Steps)
+
+### 1. Open a terminal in the repo folder
+
+```bash
+cd ~/hermes-reservoir-engineering
+```
+
+(Replace `~/hermes-reservoir-engineering` with your actual path.)
+
+### 2. Launch Hermes
+
+```bash
+hermes
+```
+
+### 3. Load the reservoir skill (domain-specific guidance)
+
+Inside the Hermes session, type:
+
+```
+/skill reservoir-engineering
+```
+
+### 4. Start the first exercise
+
+Type this prompt to Hermes:
+
+```text
+Read 01_explore_plan_code/production_analysis.py, sample_production.csv, and test_production_analysis.py. Add a compute_water_cut_trend(df) function where water cut = water_bbl / (oil_bbl + water_bbl). Return one row per well with first_water_cut, latest_water_cut, and water_cut_change_pct_points.
+```
+
+### 5. Verify the result
+
+After Hermes finishes editing, run:
+
+```bash
+python3 -m pytest 01_explore_plan_code/ -v
+```
+
+If everything shows PASS, the exercise is complete.
+
+## Folder Structure
+
+| Folder | Contents |
+|--------|----------|
+| `01_explore_plan_code/` | Exercise: read data before editing |
+| `02_specific_context/` | Exercise: give Hermes specific instructions |
+| `03_verify_your_work/` | Exercise: verify with tests |
+| `04_init_project_memory/` | How to save project rules |
+| `05_skills/` | How to use built-in skills |
+| `06_subagent_review/` | How to ask an AI reviewer to check results |
+| `07_cli_workflow/` | How to combine shell + Python QA |
+| `08_mcp_pyrestoolbox/` | How to use PVT tools via MCP |
+| `09_parallel_fanout/` | How to run multiple scenarios at once |
+
+## Common Hermes Commands
+
+| Command | Function |
+|---------|----------|
+| `hermes` | Start chat session |
+| `hermes -w` | Isolated worktree mode (safe for parallel work) |
+| `hermes -s reservoir-engineering` | Preload a skill |
+| `/skill skill-name` | Load a skill mid-session |
+| `/init` | Reload project rules from CLAUDE.md |
+| `/delegate_task` | Send a task to a sub-agent |
+| `/cron` | Schedule recurring tasks |
+| `/agents` | List active sub-agents |
+
+## Key Tips
+
+- **Always state units** — psia vs bara, degF vs degC.
+- **Don't trust a smooth answer blindly** — always verify with tests or plots.
+- **Read the data first, then ask for edits** — so the AI understands the context.
+- **MCP = automatic PVT calculator** — better than asking the AI to compute by hand.
+- **Sub-agent = reviewer** — ask a second AI instance to review the first AI's work.
+
+## Troubleshooting
+
+1. Check if `pytest` is installed: `python3 -m pytest --version`
+2. Check if `hermes` is installed: `hermes --version`
+3. Re-read the original guides inside each exercise folder (01–09).
+
+## Next Steps
+
+After exercises 01–03, try exercise 06 (sub-agent review) and 08 (MCP pyResToolbox). These are the closest to real-world reservoir engineering workflows.
